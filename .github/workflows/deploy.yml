@@ -18,7 +18,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 20m
           script: |
+            sudo chown -R ec2-user:ec2-user /home/ec2-user/projet-churn
             git config --global --add safe.directory /home/ec2-user/projet-churn
             cd /home/ec2-user/projet-churn
             git pull origin main
