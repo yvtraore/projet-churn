@@ -3,25 +3,29 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - main   # déclenché à chaque push sur main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/projet-churn
+            git config --global --add safe.directory /home/ec2-user/projet-churn
+            cd /home/ec2-user/projet-churn
             git pull origin main
-            pip3 install -r requirements.txt --break-system-packages
-            sudo systemctl restart churn
+            pip3 install -r streamlit/requirements.txt
+            pkill -f streamlit || true
+            nohup streamlit run streamlit/app.py \
+              --server.port 8501 \
+              --server.address 0.0.0.0 \
+              > /home/ec2-user/streamlit.log 2>&1 &
             echo "✅ Déploiement réussi"
