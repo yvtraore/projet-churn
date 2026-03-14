@@ -23,6 +23,7 @@ jobs:
             sudo chown -R ec2-user:ec2-user /home/ec2-user/projet-churn
             git config --global --add safe.directory /home/ec2-user/projet-churn
             cd /home/ec2-user/projet-churn
+            git reset --hard origin/main
             git pull origin main
             pip3 install -r streamlit/requirements.txt
             pkill -f streamlit || true
@@ -30,4 +31,6 @@ jobs:
               --server.port 8501 \
               --server.address 0.0.0.0 \
               > /home/ec2-user/streamlit.log 2>&1 &
+            disown
             echo "✅ Déploiement réussi"
+
