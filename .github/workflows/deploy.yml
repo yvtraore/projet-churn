@@ -27,10 +27,9 @@ jobs:
             git pull origin main
             pip3 install -r streamlit/requirements.txt
             pkill -f streamlit || true
-            nohup streamlit run streamlit/app.py \
+            sleep 2
+            setsid nohup streamlit run streamlit/app.py \
               --server.port 8501 \
               --server.address 0.0.0.0 \
-              > /home/ec2-user/streamlit.log 2>&1 &
-            disown
+              > /home/ec2-user/streamlit.log 2>&1 < /dev/null &
             echo "✅ Déploiement réussi"
-
